@@ -16,6 +16,8 @@ import {
   incomeLineItemSchema,
   buildIncomeLineItems,
   buildCustomer,
+  estimateTextSchema,
+  toDocumentHtml,
 } from "./_shared.js";
 
 export function registerEstimateTools(server: FastMCP) {
@@ -58,7 +60,7 @@ export function registerEstimateTools(server: FastMCP) {
   server.addTool({
     name: "create_estimate",
     description:
-      "Create a new estimate/proposal (Angebot). Requires name, document_date and at least one line_item (vat_rate as decimal, e.g. 0.19). Returns the created estimate with its new ID.",
+      "Create a new estimate/proposal (Angebot) as a draft. Requires name, document_date and at least one line_item (vat_rate as decimal, e.g. 0.19). Optional greetings_text (Einleitung) and thanks_text (Schlusstext). Returns the created estimate with its new ID. Note: the API does not return the two texts when reading an estimate; use get_estimate_text to check them.",
     annotations: { title: "Create estimate", ...CREATE },
     parameters: z
       .object({
@@ -71,11 +73,15 @@ export function registerEstimateTools(server: FastMCP) {
         contact_person_id: idParam.optional().describe("Contact person ID"),
         project_id: idParam.optional().describe("Project ID"),
         custom_template_id: idParam.optional().describe("Custom document template ID (use get_estimate on an existing estimate to find template IDs)"),
+        greetings_text: estimateTextSchema("Introduction text above the line items (Einleitung, e.g. salutation and context)").optional(),
+        thanks_text: estimateTextSchema("Closing text below the totals (Schlusstext, e.g. assumptions, payment plan, schedule, regards)").optional(),
       })
       .strict(),
     execute: async (params) => {
-      const { customer_id, contact_person_id, project_id, custom_template_id, line_items, ...rest } = params;
+      const { customer_id, contact_person_id, project_id, custom_template_id, line_items, greetings_text, thanks_text, ...rest } = params;
       const body: Record<string, unknown> = { ...rest, line_items: buildIncomeLineItems(line_items) };
+      if (greetings_text !== undefined) body.greetings_text = toDocumentHtml(greetings_text);
+      if (thanks_text !== undefined) body.thanks_text = toDocumentHtml(thanks_text);
 
       if (custom_template_id !== undefined) body.custom_template = { id: custom_template_id };
       const customer = buildCustomer(customer_id, contact_person_id, project_id);
@@ -89,7 +95,7 @@ export function registerEstimateTools(server: FastMCP) {
 
   server.addTool({
     name: "update_estimate",
-    description: "Update an existing estimate/proposal (partial). Only provided fields are changed.",
+    description: "Update an existing draft estimate/proposal (partial). Only provided fields are changed, including greetings_text (Einleitung) and thanks_text (Schlusstext). Accepted or sent estimates cannot be edited.",
     annotations: { title: "Update estimate", ...UPDATE },
     parameters: z
       .object({
@@ -102,12 +108,16 @@ export function registerEstimateTools(server: FastMCP) {
         contact_person_id: idParam.optional().describe("Contact person ID"),
         project_id: idParam.optional().describe("Project ID"),
         custom_template_id: idParam.optional().describe("Custom document template ID"),
+        greetings_text: estimateTextSchema("Introduction text above the line items (Einleitung, e.g. salutation and context)").optional(),
+        thanks_text: estimateTextSchema("Closing text below the totals (Schlusstext, e.g. assumptions, payment plan, schedule, regards)").optional(),
         line_items: z.array(incomeLineItemSchema).optional().describe("Estimate line items (replaces all existing items). Group positions by inserting {type: 'group', name} entries; the positions that follow belong to that group until the next group entry."),
       })
       .strict(),
     execute: async (params) => {
-      const { id, customer_id, contact_person_id, project_id, custom_template_id, line_items, ...rest } = params;
+      const { id, customer_id, contact_person_id, project_id, custom_template_id, line_items, greetings_text, thanks_text, ...rest } = params;
       const body: Record<string, unknown> = { ...rest };
+      if (greetings_text !== undefined) body.greetings_text = toDocumentHtml(greetings_text);
+      if (thanks_text !== undefined) body.thanks_text = toDocumentHtml(thanks_text);
 
       if (custom_template_id !== undefined) body.custom_template = { id: custom_template_id };
       const customer = buildCustomer(customer_id, contact_person_id, project_id);

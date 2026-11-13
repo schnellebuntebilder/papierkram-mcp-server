@@ -5,6 +5,16 @@ Alle relevanten Aenderungen an diesem Projekt werden in dieser Datei dokumentier
 Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/)
 und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
+## [2.3.0] - 2026-11-13
+
+### Hinzugefuegt
+
+- **Einleitung und Schlusstext bei Angeboten** (`create_estimate`/`update_estimate`):
+  `greetings_text` und `thanks_text` laut Swagger-Spec. Reiner Text wird in Absaetze
+  umgewandelt (Leerzeile = neuer Absatz, Zeilenumbruch = `<br>`), HTML wird unveraendert
+  durchgereicht, ein leerer String loescht den Text. Die API liefert die Texte beim Lesen
+  nicht zurueck, Pruefung ueber `get_estimate_text`.
+
 ## [2.2.0] - 2026-11-13
 
 ### Hinzugefuegt

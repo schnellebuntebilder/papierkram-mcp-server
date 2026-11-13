@@ -164,6 +164,36 @@ export function buildExpenseLineItems(
 }
 
 /**
+ * Free text of an estimate (Einleitung / Schlusstext). Papierkram's editor stores
+ * HTML; plain text is converted to paragraphs so line breaks survive in the PDF.
+ */
+export const estimateTextSchema = (what: string) =>
+  z
+    .string()
+    .describe(
+      `${what}. Plain text: blank lines separate paragraphs, single line breaks stay line breaks. ` +
+        "HTML (<p>, <br>, <strong>, <em>, <ul>/<li>) is passed through unchanged. An empty string clears the text.",
+    );
+
+const HTML_TAG = /<\/?(p|br|strong|b|em|i|u|ul|ol|li|div|span)\b[^>]*>/i;
+
+function escapeHtml(text: string): string {
+  return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+/** Converts plain text to Papierkram's HTML text format; HTML input is kept as is. */
+export function toDocumentHtml(text: string): string {
+  if (text.trim() === "") return "";
+  if (HTML_TAG.test(text)) return text;
+  return text
+    .replace(/\r\n?/g, "\n")
+    .trim()
+    .split(/\n\s*\n/)
+    .map((para) => `<p>${escapeHtml(para.trim()).replace(/\n/g, "<br>")}</p>`)
+    .join("");
+}
+
+/**
  * Builds the nested `customer` object for income documents.
  * Uses `!== undefined` so a legitimate id of 0 is never dropped.
  */
