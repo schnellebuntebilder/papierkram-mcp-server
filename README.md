@@ -19,8 +19,8 @@ An [MCP](https://modelcontextprotocol.io/) (Model Context Protocol) server for t
 | Area | Operations | Count |
 |------|-----------|:-----:|
 | **Contacts** | Companies & contact persons: list, get, create, update, delete | 10 |
-| **Invoices** | list, get, create, update, delete, cancel, archive, send, download PDF | 9 |
-| **Estimates** | list, get, create, update, delete, send, download PDF | 7 |
+| **Invoices** | list, get, create, update, delete, cancel, archive, send, download PDF, PDF text | 10 |
+| **Estimates** | list, get, create, update, delete, send, download PDF, PDF text | 8 |
 | **Expenses** | list, get, create, update, delete | 5 |
 | **Projects** | list, get, create, update, delete, archive, unarchive | 7 |
 | **Time Tracking** | list, get, create, update, delete | 5 |
@@ -88,9 +88,19 @@ Create a `.env` file (or copy from `.env.example`):
 PAPIERKRAM_API_KEY=your-api-key-here
 PAPIERKRAM_SUBDOMAIN=your-subdomain
 PORT=3001  # optional, only for HTTP/SSE mode
+PAPIERKRAM_PDF_DIR=C:/Users/me/Papierkram  # optional, base folder for relative save_to paths
 ```
 
 Your subdomain is the part before `.papierkram.de` in your Papierkram URL.
+
+### Free texts and PDFs
+
+The Papierkram API v1 returns line items and totals, but not the free texts of a document
+(Einleitungstext, Schlusstext, Zahlungsbedingungen). They only exist in the rendered PDF.
+
+- `get_estimate_text` / `get_invoice_text` extract the PDF's text page by page.
+- `download_estimate_pdf` / `download_invoice_pdf` accept `save_to` (file or folder path) and then
+  return only the saved path instead of base64. A folder path gets the document number as file name.
 
 ## Usage
 

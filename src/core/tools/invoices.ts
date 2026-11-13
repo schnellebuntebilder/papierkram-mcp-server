@@ -3,6 +3,7 @@ import { z } from "zod";
 import { getClient } from "../../api/client.js";
 import { compactList, compactInvoice } from "../../api/transformers.js";
 import { toToolJson } from "../../api/format.js";
+import { registerPdfTools, INVOICE_PDF } from "./_pdf.js";
 import {
   READ_ONLY,
   CREATE,
@@ -291,24 +292,5 @@ export function registerInvoiceTools(server: FastMCP) {
     },
   });
 
-  server.addTool({
-    name: "download_invoice_pdf",
-    description: "Download an invoice as PDF. Returns base64-encoded PDF data (content_type, base64_length, base64).",
-    annotations: { title: "Download invoice PDF", ...READ_ONLY },
-    parameters: z.object({
-      id: idParam.describe("Invoice ID"),
-    }),
-    execute: async (params) => {
-      const client = getClient();
-      const result = await client.getPdf(`/income/invoices/${params.id}/pdf`);
-      // NOTE: base64 is the deliverable and must NOT be routed through toToolJson
-      // (truncation would corrupt it). fastmcp 1.27.7 has no embedded-resource content type.
-      return JSON.stringify({
-        message: `PDF for invoice ${params.id} downloaded successfully.`,
-        content_type: result.contentType,
-        base64_length: result.base64.length,
-        base64: result.base64,
-      });
-    },
-  });
+  registerPdfTools(server, INVOICE_PDF);
 }

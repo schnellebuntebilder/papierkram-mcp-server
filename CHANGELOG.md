@@ -5,6 +5,17 @@ Alle relevanten Aenderungen an diesem Projekt werden in dieser Datei dokumentier
 Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/)
 und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
+## [2.1.0] - 2026-11-13
+
+### Hinzugefuegt
+
+- **`get_estimate_text` / `get_invoice_text`**: Text des gerenderten PDFs seitenweise
+  (`unpdf`). Damit sind Einleitungstext, Schlusstext und Zahlungsbedingungen lesbar, die die
+  API v1 nicht als Felder liefert.
+- **`save_to` bei `download_estimate_pdf` / `download_invoice_pdf`**: schreibt das PDF auf die
+  Platte und gibt nur den Pfad zurueck statt Base64 im Kontext. Ordnerpfade bekommen die
+  Beleg-Nummer als Dateinamen; relative Pfade beziehen sich auf `PAPIERKRAM_PDF_DIR`.
+
 ## [2.0.4] - 2026-08-27
 
 ### Behoben

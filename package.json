@@ -1,6 +1,6 @@
 {
   "name": "papierkram-mcp-server",
-  "version": "2.0.4",
+  "version": "2.1.0",
   "description": "MCP Server for the Papierkram.de accounting API",
   "author": "Wagner-Emden IT Services",
   "license": "MIT",
@@ -30,7 +30,8 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:unit": "vitest run tests/unit",
-    "test:integration": "vitest run tests/integration"
+    "test:integration": "vitest run tests/integration",
+    "prepare": "npm run build"
   },
   "repository": {
     "type": "git",
@@ -48,7 +49,7 @@
     "buchhaltung"
   ],
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=22.0.0"
   },
   "overrides": {
     "@modelcontextprotocol/sdk": "1.21.2"
@@ -56,6 +57,7 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "1.21.2",
     "fastmcp": "1.27.7",
+    "unpdf": "^1.9.1",
     "zod": "^3.24.2"
   },
   "devDependencies": {
