@@ -38,8 +38,8 @@ describe("MCP-Protokoll Registrierung", () => {
 
   // ---- Tools ----
 
-  it("Registriert alle 56 Tools", () => {
-    expect(server.tools).toHaveLength(56);
+  it("Registriert alle 58 Tools", () => {
+    expect(server.tools).toHaveLength(58);
   });
 
   it("Alle Tool-Namen folgen der verb_noun Konvention", () => {

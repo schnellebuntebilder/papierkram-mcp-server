@@ -8,7 +8,7 @@ An [MCP](https://modelcontextprotocol.io/) (Model Context Protocol) server for t
 
 ## Features
 
-- **56 tools** covering the full Papierkram API v1
+- **58 tools** covering the full Papierkram API v1, plus PDF text extraction
 - **Install via npm**: run directly with `npx papierkram-mcp-server` — no clone needed
 - **Two transports**: stdio (for Claude Desktop, Cursor, Claude Code) and HTTP/SSE (for n8n, custom integrations)
 - **Docker ready** for easy self-hosted deployment
