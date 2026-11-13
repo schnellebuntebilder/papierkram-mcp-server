@@ -96,7 +96,7 @@ export function registerInvoiceTools(server: FastMCP) {
       .object({
         name: z.string().min(1).describe("Invoice name/title"),
         payment_term_id: idParam.describe("Payment term ID (required, use list_payment_terms to get available IDs)"),
-        line_items: z.array(incomeLineItemSchema).min(1).describe("Invoice line items (at least one required)"),
+        line_items: z.array(incomeLineItemSchema).min(1).describe("Invoice line items (at least one required). Group positions by inserting {type: 'group', name} entries; the positions that follow belong to that group until the next group entry."),
         supply_date: z.string().optional().describe("Supply/service date (YYYY-MM-DD)"),
         document_date: z.string().optional().describe("Invoice date (YYYY-MM-DD)"),
         description: z.string().optional().describe("Description / notes"),
@@ -153,7 +153,7 @@ export function registerInvoiceTools(server: FastMCP) {
         contact_person_id: idParam.optional().describe("Contact person ID"),
         project_id: idParam.optional().describe("Project ID"),
         custom_template_id: idParam.optional().describe("Custom document template ID"),
-        line_items: z.array(incomeLineItemSchema).optional().describe("Invoice line items"),
+        line_items: z.array(incomeLineItemSchema).optional().describe("Invoice line items (replaces all existing items). Group positions by inserting {type: 'group', name} entries; the positions that follow belong to that group until the next group entry."),
         ...billingFields,
       })
       .strict(),

@@ -79,8 +79,8 @@ export const compactParam = z
   .default(true)
   .describe("Return compact summaries (default: true). Set false for the full API response.");
 
-/** Line item for income documents (invoices + estimates). */
-export const incomeLineItemSchema = z
+/** Regular position (Leistung) on an income document. */
+export const incomePositionSchema = z
   .object({
     name: z.string().min(1).describe("Line item name/description"),
     description: z.string().optional().describe("Additional description"),
@@ -92,6 +92,25 @@ export const incomeLineItemSchema = z
       .describe("VAT rate as decimal fraction, e.g. 0.19 for 19% (a string like '19%' is also accepted and normalized to 0.19)"),
   })
   .strict();
+
+/**
+ * Group heading (Positionsgruppe) on an income document. Every position after it,
+ * up to the next group, belongs to this group — e.g. "1. Übergreifende Leistungen"
+ * with positions 1.1, 1.2, … The API marks it with `start_new_item_group: true`.
+ */
+export const incomeGroupSchema = z
+  .object({
+    type: z.literal("group").describe("Marks this entry as a group heading"),
+    name: z.string().min(1).describe("Group title, e.g. 'Übergreifende Leistungen'"),
+    description: z.string().optional().describe("Optional text below the group title"),
+  })
+  .strict();
+
+/**
+ * Line item for income documents (invoices + estimates): either a position or a
+ * group heading. Order matters — positions follow the group they belong to.
+ */
+export const incomeLineItemSchema = z.union([incomePositionSchema, incomeGroupSchema]);
 
 /** Line item for expense vouchers. */
 export const expenseLineItemSchema = z
@@ -126,7 +145,15 @@ export function normalizeVatRate(v: number | string): number {
 export function buildIncomeLineItems(
   items: z.infer<typeof incomeLineItemSchema>[]
 ): Record<string, unknown>[] {
-  return items.map((item) => ({ ...item, vat_rate: normalizeVatRate(item.vat_rate) }));
+  return items.map((item) => {
+    if ("type" in item && item.type === "group") {
+      const group: Record<string, unknown> = { name: item.name, start_new_item_group: true };
+      if (item.description !== undefined) group.description = item.description;
+      return group;
+    }
+    const position = item as z.infer<typeof incomePositionSchema>;
+    return { ...position, vat_rate: normalizeVatRate(position.vat_rate) };
+  });
 }
 
 /** Maps expense line items to the API body, normalizing vat_rate. */

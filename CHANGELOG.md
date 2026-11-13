@@ -5,6 +5,15 @@ Alle relevanten Aenderungen an diesem Projekt werden in dieser Datei dokumentier
 Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/)
 und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
+## [2.2.0] - 2026-11-13
+
+### Hinzugefuegt
+
+- **Positionsgruppen bei Angeboten und Rechnungen** (`create_*`/`update_*`): Eintraege
+  `{ type: "group", name, description? }` in `line_items` legen eine Gruppe an
+  ("1. Uebergreifende Leistungen"); die folgenden Positionen gehoeren dazu (1.1, 1.2 …).
+  Wird als `start_new_item_group: true` an die API geschickt (laut Swagger-Spec).
+
 ## [2.1.0] - 2026-11-13
 
 ### Hinzugefuegt

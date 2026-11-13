@@ -64,7 +64,7 @@ export function registerEstimateTools(server: FastMCP) {
       .object({
         name: z.string().min(1).describe("Estimate name/title"),
         document_date: z.string().describe("Estimate date (YYYY-MM-DD), required by API"),
-        line_items: z.array(incomeLineItemSchema).min(1).describe("Estimate line items (at least one required)"),
+        line_items: z.array(incomeLineItemSchema).min(1).describe("Estimate line items (at least one required). Group positions by inserting {type: 'group', name} entries; the positions that follow belong to that group until the next group entry."),
         description: z.string().optional().describe("Description / notes"),
         flagged: z.boolean().optional().describe("Flag the estimate"),
         customer_id: idParam.optional().describe("Customer (company) ID"),
@@ -102,7 +102,7 @@ export function registerEstimateTools(server: FastMCP) {
         contact_person_id: idParam.optional().describe("Contact person ID"),
         project_id: idParam.optional().describe("Project ID"),
         custom_template_id: idParam.optional().describe("Custom document template ID"),
-        line_items: z.array(incomeLineItemSchema).optional().describe("Estimate line items"),
+        line_items: z.array(incomeLineItemSchema).optional().describe("Estimate line items (replaces all existing items). Group positions by inserting {type: 'group', name} entries; the positions that follow belong to that group until the next group entry."),
       })
       .strict(),
     execute: async (params) => {
