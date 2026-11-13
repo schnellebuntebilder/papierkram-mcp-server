@@ -6,6 +6,52 @@
 
 An [MCP](https://modelcontextprotocol.io/) (Model Context Protocol) server for the [Papierkram.de](https://papierkram.de) accounting API. Enables AI assistants to manage invoices, expenses, contacts, projects, time tracking and more directly in your Papierkram account.
 
+> **SCHNELLE BUNTE BILDER fork.** This is SBB's fork of
+> [Wagner-Emden-IT-Services/papierkram-mcp-server](https://github.com/Wagner-Emden-IT-Services/papierkram-mcp-server)
+> with our own additions (PDF text, `save_to`). Team setup: see [Installation bei SBB](#installation-bei-sbb).
+
+## Installation bei SBB
+
+Voraussetzung: [Node.js](https://nodejs.org) LTS (≥ 22) und Git. Ablauf unter Windows (PowerShell):
+
+```powershell
+mkdir $HOME\Tools\mcp-servers -Force
+cd $HOME\Tools\mcp-servers
+git clone https://github.com/schnellebuntebilder/papierkram-mcp-server.git
+cd papierkram-mcp-server
+npm.cmd install          # baut dist/ automatisch (prepare-Script)
+```
+
+Dann in Claude Desktop **Einstellungen → Entwickler → Konfiguration bearbeiten** und unter
+`mcpServers` ergänzen (Pfad an den eigenen Benutzernamen anpassen, Backslashes doppelt):
+
+```json
+"papierkram": {
+  "command": "node",
+  "args": ["C:\\Users\\<Benutzer>\\Tools\\mcp-servers\\papierkram-mcp-server\\dist\\index.js"],
+  "env": {
+    "PAPIERKRAM_API_KEY": "<API-Key aus Papierkram → Einstellungen → API>",
+    "PAPIERKRAM_SUBDOMAIN": "schnellebuntebilder"
+  }
+}
+```
+
+Claude Desktop komplett beenden (auch im Tray) und neu starten. Den API-Key nie committen oder per Chat/Mail teilen.
+
+**Update** auf den neuesten Stand des Forks:
+
+```powershell
+cd $HOME\Tools\mcp-servers\papierkram-mcp-server
+git pull
+npm.cmd install
+```
+
+Danach Claude Desktop neu starten.
+
+**Änderungen vom Original übernehmen** (für Pflegende des Forks): auf GitHub „Sync fork“ oder
+`git remote add upstream https://github.com/Wagner-Emden-IT-Services/papierkram-mcp-server.git`,
+`git fetch upstream`, `git merge upstream/main`, dann Tests (`npm test`) und pushen.
+
 ## Features
 
 - **58 tools** covering the full Papierkram API v1, plus PDF text extraction
